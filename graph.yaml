@@ -1,0 +1,44 @@
+DPPS:
+    OPS:
+        dashboard: aggregate user interface provided by other subsystems
+        provide_API:
+        control_subs: ability to startup, shutdown and upgrade subsystems
+        issue: automatic incident reports in case of problems
+        status: generate status report that collect and synthesize status of other subsystems
+    WorkLoad:
+        executing_workflow: executing and monitoring multi-stage workflows
+        monitoring: monitoring available computing and storage resources
+        tracking: tracking workflow, data provenance and history to the job level
+        API: propvide API for workflow definition
+    BDMS:
+        query_for_data: response to a query for data by a user
+        monitoring: performance monitoring and tuning to keep the storage system in a healthy state
+        analysis_gui: provide querying/analysis capabilities to the end user
+    DataPipe:
+        generic:
+            R0_to_DL1: process dataset from R0 to DL0
+            DL0_to_DL1: process dataset from DL0 to DL1
+            preprocess_R0: pre process simulated R0 event data to create a subset of DL1 and DL2 features needed to train reconstruction models
+            DL1_to_DL2: process run from DL1 to complete DL2
+            merge_files: Merge DL1 or DL2 files
+            DL2_to_DL3: Process dataset from DL2 to DL3
+        simulated data:
+            generate_IRF_single: generate IRFs for a single point in observation phase space
+            generate_IRF_hypercube: generate IRF hypercube for a Grid Simulation. merge multiple single IRFs into a general one
+            generate_DL3: generate DL3/IRFs for a Tailored Simulation
+        observed data:
+            DL0_to_DL3: Process the event data from an OB from DL0/event to DL3/event
+            generate_DL3/IRF: generate a DL3/IRF matched to an existing observation from an IRF hypercube
+            generate_report: Generate a data processing report
+    CalibPipe:
+        monitor_data: monitor quantities like inter telescope calibration and timing differences
+        calibration: generate calibration coefficients needed by DataPipe
+    QualPipe:
+        performance_benchmark: generate and track science performance benchmarks up to DL3
+        custom_report: provide UI to allow complex data quality exploration with minimal efforts
+        quality_report: provide data quality reports and detect deviation from normal behavior
+    SimPipe:
+        simulation: simulate the response of CTA telescope components for any moment of observations
+        validation: validate and update the simulation model
+        uncertainty: estimate systematic uncertainty
+
