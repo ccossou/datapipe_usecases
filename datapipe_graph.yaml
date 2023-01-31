@@ -1,45 +1,62 @@
-generic:
-    1:
-        id : 1
-        title : preprocess_R0
-        category: generic
-        description : pre process simulated R0 event data to create a subset of DL1 and DL2 features needed to train reconstruction models
-        child :
-    2:
-        id: 2
-        title: R0_to_DL1
-        category: generic
-        description: process dataset from R0 to DL0
-        child:
-    3:
-        id: 3
-        title: DL0_to_DL1
-        category: generic
-        description: process dataset from DL0 to DL1
-        child:
-    4:
-        id: 4
-        title: DL1_to_DL2
-        category: generic
-        description: process run from DL1 to complete DL2
-        child:
-    5:
-        id: 5
-        title: DL2_to_DL3
-        category: generic
-        description: Process dataset from DL2 to DL3
-        child:
-    6:
-        id: 6
-        title: merge_files
-        category: generic
-        description: Merge DL1 or DL2 files
-        child:
-simulated data:
-    101#generate_IRF_single: generate IRFs for a single point in observation phase space
-    102#generate_IRF_hypercube: generate IRF hypercube for a Grid Simulation. merge multiple single IRFs into a general one
-    103#generate_DL3: generate DL3/IRFs for a Tailored Simulation
-observed data:
-    201#DL0_to_DL3: Process the event data from an OB from DL0/event to DL3/event
-    202#generate_DL3/IRF: generate a DL3/IRF matched to an existing observation from an IRF hypercube
-    203#generate_report: Generate a data processing report
+1:
+    title : preprocess_R0
+    category: generic
+    description : pre process simulated R0 event data to create a subset of DL1 and DL2 features needed to train reconstruction models
+    child :
+2:
+    title: R0_to_DL1
+    category: generic
+    description: process dataset from R0 to DL0
+    child:
+3:
+    title: DL0_to_DL1
+    category: generic
+    description: process dataset from DL0 to DL1
+    child:
+4:
+    title: DL1_to_DL2
+    category: generic
+    description: process run from DL1 to complete DL2
+    child:
+5:
+    title: DL2_to_DL3
+    category: generic
+    description: Process dataset from DL2 to DL3
+    child:
+6:
+    title: merge_files
+    category: generic
+    description: Merge DL1 or DL2 files
+    child:
+
+101:
+    title: generate_IRF_single
+    category: simulation
+    description: generate IRFs for a single point in observation phase space
+    child: [2, 3, 4]
+102:
+    title: generate_IRF_hypercube
+    category: simulation
+    description: generate IRF hypercube for a Grid Simulation. merge multiple single IRFs into a general one
+    child: [2, 3, 4, 6]
+103:
+    title: generate_DL3
+    category: simulation
+    description: generate DL3/IRFs for a Tailored Simulation
+    child:
+
+201:
+    title: DL0_to_DL3
+    category: observation
+    description: Process the event data from an OB from DL0/event to DL3/event
+    child: [3, 4, 5]
+202:
+    title: generate_DL3/IRF
+    category: observation
+    description: generate a DL3/IRF matched to an existing observation from an IRF hypercube
+    child:
+203:
+    title: generate_report
+    category: observation
+    description: Generate a data processing report
+    child:
