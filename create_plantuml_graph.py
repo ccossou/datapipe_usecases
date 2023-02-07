@@ -50,16 +50,24 @@ class UniqueKeyLoader(yaml.SafeLoader):
 
 with open(graph_file, 'r') as stream:
     graph = yaml.load(stream, UniqueKeyLoader)
-    # try:
-    #     graph = yaml.load(stream, UniqueKeyLoader)
-    # except yaml.YAMLError as exc:
-    #     print(exc)
 
 plantUML_prefix = """
 @startuml
 
 skinparam shadowing false
-
+skinparam linetype ortho
+left to right direction
+skinparam  rectangle {
+    BackgroundColor<<generic>> #cccccc
+    BackgroundColor<<simulation>> APPLICATION
+    BackgroundColor<<observation>> DarkCyan
+    BorderColor black
+}
+skinparam  usecase {
+    RoundCorner 2
+    BackgroundColor white
+    BorderColor black
+}
 """
 
 plantUML_postfix = """
@@ -80,50 +88,50 @@ def parse_yaml(d, categories):
     :return:
     """
 
+    sorted_cases = {}
+    for k, v in d.items():
+        cat = v["category"]
+        if cat not in sorted_cases.keys():
+            sorted_cases[cat] = {}
 
+        sorted_cases[cat][k] = v
 
     label_str = ""
     relation_str = ""
 
-    # label_str += f"\ttogether {{\n"
-    for name, index in categories.items():
-        label_str += f"\tnode {name} as {index}\n"
-        # nodes[index] = name
-    # label_str += f"\t}}\n"
+    # we want to process the generic category at the end
+    cat_list = list(categories.keys())
+    cat_list.remove("generic")
+    cat_list.append("generic")
 
-    # sort all categories top down, expect for generic that will face them all
-    first_cat = True
-    for name, index in categories.items():
-        if name != "generic":
-            if first_cat:
-                relation_str += f"\t{index}--[hidden]r-->{categories['generic']}\n"
-                first_cat = False
-                old_index = index
-            else:
-                relation_str += f"\t{old_index}-[hidden]d->{index}\n"
-        # nodes[index] = name
 
-    for usecase_id, values in d.items():
-        cat = values["category"]
-        name = values["title"]
-        desc = values["description"]
+    gen_index = categories["generic"]
 
-        child = values["child"]
-        if child is None:
-            child = []
+    for category in cat_list:
+        try:
+            cat_index = categories[category]
+        except KeyError:
+            raise KeyError(f"Unknown usecase category '{category}'. Possible values: {list(categories.keys())}")
 
-        if cat not in categories.keys():
-            raise KeyError(f"Unknown usecase category '{cat}'. Possible values: {list(categories.keys())}")
+        label_str += f'\trectangle " " <<{category}>> as {cat_index} {{\n'
 
-        label_str += f'\trectangle "{name}" as {usecase_id}\n'
+        if category != "generic":
+            relation_str += f"\t{cat_index}--[hidden]-->{gen_index}\n"
 
-        if cat != "generic":
-            relation_str += f"\t{categories[cat]}-r->{usecase_id}\n"
-        else:
-            relation_str += f"\t{usecase_id}<-l-{categories[cat]}\n"
+        for usecase_id, values in sorted_cases[category].items():
+            name = values["title"]
+            desc = values["description"]
 
-        for ci in child:
-            relation_str += f"\t{usecase_id}->{ci}\n"
+            child = values["child"]
+            if child is None:
+                child = []
+
+            label_str += f'\tusecase "{name}" as {usecase_id}\n'
+
+            for ci in child:
+                relation_str += f"\t{usecase_id}<--{ci}\n"
+
+        label_str += f'\t}}\n'
 
     outcode = ""
     outcode += plantUML_prefix
